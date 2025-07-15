@@ -102,17 +102,9 @@ document.addEventListener('keydown', (e) => {
 function toggleSidebar() {
     const container = document.querySelector('.container');
     const sidebar = document.getElementById('sidebar');
-    const toggleIcon = document.getElementById('toggle-icon');
     
     container.classList.toggle('collapsed');
     sidebar.classList.toggle('collapsed');
-    
-    // Update toggle icon
-    if (sidebar.classList.contains('collapsed')) {
-        toggleIcon.textContent = '→';
-    } else {
-        toggleIcon.textContent = '←';
-    }
 }
 
 // Auto-collapse on mobile
@@ -123,7 +115,6 @@ function checkMobile() {
     if (window.innerWidth <= 768) {
         container.classList.add('collapsed');
         sidebar.classList.add('collapsed');
-        document.getElementById('toggle-icon').textContent = '→';
     }
 }
 
