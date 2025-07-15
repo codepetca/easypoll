@@ -49,7 +49,7 @@
     </div>
     
     <div class="form-group">
-      <label>Options</label>
+      <div class="form-label">Options</div>
       {#each options as option, index}
         <div class="option-input">
           <input 
