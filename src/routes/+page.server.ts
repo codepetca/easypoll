@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
@@ -23,41 +23,40 @@ export const actions: Actions = {
 
 		// Ensure we have at least 2 options
 		if (options.length < 2) {
-			return {
+			return fail(400, {
 				error: 'Please provide at least 2 options'
-			};
+			});
 		}
 
 		// Generate a random poll ID
 		const pollId = Math.random().toString(36).substr(2, 9);
 
-		try {
-			// Create poll on PartyKit server
-			const response = await fetch(`${PARTYKIT_URL}/parties/main/${pollId}`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					title,
-					options
-				})
-			});
+		console.log(`Creating poll with ID: ${pollId}`);
+		console.log(`PartyKit URL: ${PARTYKIT_URL}`);
+		
+		// Create poll on PartyKit server
+		const response = await fetch(`${PARTYKIT_URL}/parties/main/${pollId}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				title,
+				options
+			})
+		});
 
-			if (!response.ok) {
-				throw new Error('Failed to create poll');
-			}
-
-			// Redirect to the poll page
-			throw redirect(302, `/${pollId}`);
-		} catch (error) {
-			if (error instanceof Response) {
-				throw error; // Re-throw redirect
-			}
-
-			return {
+		console.log(`Response status: ${response.status}`);
+		
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(`PartyKit error: ${errorText}`);
+			return fail(500, {
 				error: 'Failed to create poll. Please try again.'
-			};
+			});
 		}
+
+		// Redirect to the poll page
+		throw redirect(302, `/${pollId}`);
 	}
 };
