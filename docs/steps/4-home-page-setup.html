@@ -72,31 +72,31 @@ export const actions: Actions = {
 
 <h3>📝 Form Processing</h3>
 <ul>
-    <li><strong>FormData extraction:</strong> Gets title and options from the form</li>
-    <li><strong>Validation:</strong> Ensures at least 2 options are provided</li>
-    <li><strong>ID generation:</strong> Creates a unique poll identifier</li>
+  <li><strong>FormData extraction:</strong> Gets title and options from the form</li>
+  <li><strong>Validation:</strong> Ensures at least 2 options are provided</li>
+  <li><strong>ID generation:</strong> Creates a unique poll identifier</li>
 </ul>
 
 <h3>🌐 API Communication</h3>
 <ul>
-    <li><strong>HTTP POST:</strong> Sends poll data to PartyKit server</li>
-    <li><strong>Error handling:</strong> Returns user-friendly error messages</li>
-    <li><strong>Redirect:</strong> Navigates to the new poll page on success</li>
+  <li><strong>HTTP POST:</strong> Sends poll data to PartyKit server</li>
+  <li><strong>Error handling:</strong> Returns user-friendly error messages</li>
+  <li><strong>Redirect:</strong> Navigates to the new poll page on success</li>
 </ul>
 
 <div class="warning">
-    <strong>🔧 Note:</strong> We use <code>fail()</code> for proper SvelteKit error handling and
-    <code>env.dynamic/private</code> for environment variables.
+  <strong>🔧 Note:</strong> We use <code>fail()</code> for proper SvelteKit error handling and
+  <code>env.dynamic/private</code> for environment variables.
 </div>
 
 <div class="success">
-    <strong>✅ Server Actions Ready!</strong> The backend logic for poll creation is complete. Next, we'll create the
-    user-facing form component.
+  <strong>✅ Server Actions Ready!</strong> The backend logic for poll creation is complete. Next, we'll create the
+  user-facing form component.
 </div>
 
 <!-- Navigation -->
 <div class="navigation">
-    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
-    <span class="step-indicator">Step 5 of 10</span>
-    <button class="nav-btn" onclick="nextStep()">Next →</button>
+  <button class="nav-btn secondary" onclick="previousStep()">◀ Back</button>
+  <span class="step-indicator">Step 5 of 10</span>
+  <button class="nav-btn" onclick="nextStep()">Next ▶</button>
 </div>

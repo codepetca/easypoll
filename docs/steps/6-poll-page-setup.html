@@ -48,31 +48,31 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 
 <h3>🎯 Benefits of Server Loading</h3>
 <ul>
-    <li><strong>SEO friendly:</strong> Search engines can see the poll content</li>
-    <li><strong>Faster initial load:</strong> No loading spinner for initial data</li>
-    <li><strong>Better reliability:</strong> Server has better network access to PartyKit</li>
+  <li><strong>SEO friendly:</strong> Search engines can see the poll content</li>
+  <li><strong>Faster initial load:</strong> No loading spinner for initial data</li>
+  <li><strong>Better reliability:</strong> Server has better network access to PartyKit</li>
 </ul>
 
 <h3>🔍 Error Handling</h3>
 <ul>
-    <li><strong>404 handling:</strong> Shows proper error page if poll doesn't exist</li>
-    <li><strong>500 handling:</strong> Graceful degradation for server errors</li>
-    <li><strong>Type safety:</strong> Returns properly typed poll data</li>
+  <li><strong>404 handling:</strong> Shows proper error page if poll doesn't exist</li>
+  <li><strong>500 handling:</strong> Graceful degradation for server errors</li>
+  <li><strong>Type safety:</strong> Returns properly typed poll data</li>
 </ul>
 
 <div class="warning">
-    <strong>🔧 Note:</strong> We use <code>PageServerLoad</code> instead of <code>PageLoad</code> to ensure this
-    runs on the server, not in the browser.
+  <strong>🔧 Note:</strong> We use <code>PageServerLoad</code> instead of <code>PageLoad</code> to ensure this
+  runs on the server, not in the browser.
 </div>
 
 <div class="success">
-    <strong>✅ Data Loading Ready!</strong> Our polls will now load quickly with all data available immediately.
-    Next, we'll create the interactive voting interface.
+  <strong>✅ Data Loading Ready!</strong> Our polls will now load quickly with all data available immediately.
+  Next, we'll create the interactive voting interface.
 </div>
 
 <!-- Navigation -->
 <div class="navigation">
-    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
-    <span class="step-indicator">Step 7 of 10</span>
-    <button class="nav-btn" onclick="nextStep()">Next →</button>
+  <button class="nav-btn secondary" onclick="previousStep()">◀ Back</button>
+  <span class="step-indicator">Step 7 of 10</span>
+  <button class="nav-btn" onclick="nextStep()">Next ▶</button>
 </div>
