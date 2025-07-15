@@ -1,0 +1,62 @@
+<div class="step-number">2</div>
+<h1>Step 2: TypeScript Types</h1>
+<p>Let's create the TypeScript interfaces that will define the structure of our data throughout the application.</p>
+
+<h2>Create the Types File</h2>
+<p>First, create the <code>src/lib</code> directory if it doesn't exist:</p>
+<pre><code>mkdir src/lib</code></pre>
+
+<p>Now create <code>src/lib/types.ts</code> with the following content:</p>
+<pre><code>export interface Poll {
+  id: string;
+  title: string;
+  options: string[];
+  votes: { [option: string]: number };
+}
+
+export interface VoteMessage {
+  type: 'vote';
+  option: string;
+}
+
+export interface PollUpdateMessage {
+  type: 'poll-update';
+  poll: Poll;
+}
+
+export type Message = VoteMessage | PollUpdateMessage;</code></pre>
+
+<h2>Understanding the Types</h2>
+<p>Let's break down what each interface does:</p>
+
+<h3>Poll Interface</h3>
+<ul>
+    <li><strong>id:</strong> Unique identifier for each poll</li>
+    <li><strong>title:</strong> The question being asked</li>
+    <li><strong>options:</strong> Array of possible answers</li>
+    <li><strong>votes:</strong> Object mapping each option to its vote count</li>
+</ul>
+
+<h3>Message Types</h3>
+<ul>
+    <li><strong>VoteMessage:</strong> Sent when a user votes for an option</li>
+    <li><strong>PollUpdateMessage:</strong> Sent to update all clients with new vote counts</li>
+    <li><strong>Message:</strong> Union type for type-safe message handling</li>
+</ul>
+
+<div class="warning">
+    <strong>💡 Pro Tip:</strong> Having shared types between client and server ensures consistency and catches
+    errors at compile time rather than runtime.
+</div>
+
+<div class="success">
+    <strong>✅ Types Created!</strong> Now we have a solid foundation for type-safe development. Next, we'll create
+    the PartyKit server that will handle our real-time functionality.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 3 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>

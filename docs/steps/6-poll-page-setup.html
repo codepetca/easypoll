@@ -1,0 +1,78 @@
+<div class="step-number">6</div>
+<h1>Step 6: Poll Page Setup</h1>
+<p>Now we'll create the dynamic route that loads and displays individual polls with their current vote counts.</p>
+
+<h2>Create Dynamic Route</h2>
+<p>First, create the dynamic route directory:</p>
+<pre><code>mkdir src/routes/[poll_id]</code></pre>
+
+<h2>Create Server Load Function</h2>
+<p>Create <code>src/routes/[poll_id]/+page.server.ts</code>:</p>
+<pre><code>import { error } from '@sveltejs/kit';
+import type { Poll } from '$lib/types';
+import { env } from '$env/dynamic/private';
+import type { PageServerLoad } from './$types';
+
+// Fallback to default development URL if not set
+const PARTYKIT_URL = env.PARTYKIT_URL || 'http://127.0.0.1:1999';
+
+export const load: PageServerLoad = async ({ params, fetch }) => {
+  const pollId = params.poll_id;
+  
+  try {
+    const response = await fetch(`${PARTYKIT_URL}/parties/main/${pollId}`);
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw error(404, 'Poll not found');
+      }
+      throw error(500, 'Failed to load poll');
+    }
+    
+    const poll: Poll = await response.json();
+    
+    return {
+      poll,
+      pollId
+    };
+  } catch (err) {
+    if (err instanceof Response) {
+      throw err;
+    }
+    throw error(500, 'Failed to load poll');
+  }
+};</code></pre>
+
+<h2>Understanding Server-Side Loading</h2>
+<p>This load function runs on the server before the page renders:</p>
+
+<h3>🎯 Benefits of Server Loading</h3>
+<ul>
+    <li><strong>SEO friendly:</strong> Search engines can see the poll content</li>
+    <li><strong>Faster initial load:</strong> No loading spinner for initial data</li>
+    <li><strong>Better reliability:</strong> Server has better network access to PartyKit</li>
+</ul>
+
+<h3>🔍 Error Handling</h3>
+<ul>
+    <li><strong>404 handling:</strong> Shows proper error page if poll doesn't exist</li>
+    <li><strong>500 handling:</strong> Graceful degradation for server errors</li>
+    <li><strong>Type safety:</strong> Returns properly typed poll data</li>
+</ul>
+
+<div class="warning">
+    <strong>🔧 Note:</strong> We use <code>PageServerLoad</code> instead of <code>PageLoad</code> to ensure this
+    runs on the server, not in the browser.
+</div>
+
+<div class="success">
+    <strong>✅ Data Loading Ready!</strong> Our polls will now load quickly with all data available immediately.
+    Next, we'll create the interactive voting interface.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 7 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>

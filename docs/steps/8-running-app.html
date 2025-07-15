@@ -1,0 +1,86 @@
+<div class="step-number">8</div>
+<h1>Step 8: Running the App</h1>
+<p>Time to bring everything together and run your real-time polling app!</p>
+
+<h2>Update Package Scripts</h2>
+<p>Add these scripts to your <code>package.json</code>:</p>
+<pre><code>{
+  "scripts": {
+    "dev": "npm run dev:party &amp; npm run dev:sveltekit",
+    "dev:party": "partykit dev",
+    "dev:sveltekit": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "party:deploy": "partykit deploy"
+  }
+}</code></pre>
+
+<h2>Start Your Development Servers</h2>
+<p>Run both servers simultaneously:</p>
+<pre><code>npm run dev</code></pre>
+
+<p>This command starts:</p>
+<ul>
+    <li><strong>PartyKit server</strong> on <code>http://127.0.0.1:1999</code></li>
+    <li><strong>SvelteKit app</strong> on <code>http://localhost:5173</code></li>
+</ul>
+
+<h2>Test Your Application</h2>
+<p>Follow these steps to test all functionality:</p>
+
+<h3>1. Create a Poll</h3>
+<ol>
+    <li>Go to <code>http://localhost:5173</code></li>
+    <li>Enter a poll title (e.g., "What's your favorite color?")</li>
+    <li>Add poll options (e.g., "Red", "Blue", "Green")</li>
+    <li>Click "Create Poll"</li>
+</ol>
+
+<h3>2. Test Real-time Voting</h3>
+<ol>
+    <li>Copy the poll URL from your browser</li>
+    <li>Open the poll in multiple browser tabs or windows</li>
+    <li>Vote in one tab</li>
+    <li>Watch the results update instantly in other tabs! ⚡</li>
+</ol>
+
+<h3>3. Test Sharing</h3>
+<ol>
+    <li>Click the "Copy Link" button on any poll</li>
+    <li>Share the link with friends or open in incognito mode</li>
+    <li>Vote from different devices/browsers</li>
+    <li>See votes update across all connected clients</li>
+</ol>
+
+<div class="success">
+    <strong>🎉 It's Working!</strong> You now have a fully functional real-time polling app. Users can create polls,
+    vote, and see results update instantly across all devices.
+</div>
+
+<h2>Troubleshooting</h2>
+<p>If you encounter issues:</p>
+
+<h3>Environment Variables</h3>
+<ul>
+    <li>Ensure your <code>.env</code> file is in the project root</li>
+    <li>Restart servers after changing environment variables</li>
+</ul>
+
+<h3>Connection Issues</h3>
+<ul>
+    <li>Check that both servers are running</li>
+    <li>Look for error messages in browser console</li>
+    <li>Verify PartyKit server responds at <code>http://127.0.0.1:1999</code></li>
+</ul>
+
+<div class="warning">
+    <strong>💡 Pro Tip:</strong> Open browser dev tools (F12) to see WebSocket connections and debug any issues. The
+    Network tab shows WebSocket traffic.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 9 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>

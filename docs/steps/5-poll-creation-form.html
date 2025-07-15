@@ -1,0 +1,242 @@
+<div class="step-number">5</div>
+<h1>Step 5: Poll Creation Form</h1>
+<p>Let's create the interactive form where users can create new polls with multiple options.</p>
+
+<h2>Replace Home Page Content</h2>
+<p>Replace all content in <code>src/routes/+page.svelte</code> with:</p>
+<pre><code>&lt;script lang="ts"&gt;
+  import { enhance } from '$app/forms';
+  import type { ActionData } from './$types';
+  
+  export let form: ActionData;
+  
+  let options = ['', ''];
+  
+  function addOption() {
+    options = [...options, ''];
+  }
+  
+  function removeOption(index: number) {
+    if (options.length &gt; 2) {
+      options = options.filter((_, i) =&gt; i !== index);
+    }
+  }
+  
+  let loading = false;
+&lt;/script&gt;
+
+&lt;svelte:head&gt;
+  &lt;title&gt;Create a Poll&lt;/title&gt;
+&lt;/svelte:head&gt;
+
+&lt;main class="container"&gt;
+  &lt;h1&gt;Create a New Poll&lt;/h1&gt;
+  
+  &lt;form 
+    method="POST" 
+    action="?/createPoll"
+    use:enhance={() =&gt; {
+      loading = true;
+      return async ({ update }) =&gt; {
+        loading = false;
+        await update();
+      };
+    }}
+  &gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="title"&gt;Poll Title&lt;/label&gt;
+      &lt;input 
+        type="text" 
+        id="title" 
+        name="title" 
+        placeholder="What's your question?"
+        required
+      /&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="form-group"&gt;
+      &lt;label&gt;Options&lt;/label&gt;
+      {#each options as option, index}
+        &lt;div class="option-input"&gt;
+          &lt;input 
+            type="text" 
+            name="option-{index}" 
+            placeholder="Option {index + 1}"
+            bind:value={options[index]}
+            required
+          /&gt;
+          {#if options.length &gt; 2}
+            &lt;button 
+              type="button" 
+              class="remove-btn"
+              on:click={() =&gt; removeOption(index)}
+            &gt;
+              ×
+            &lt;/button&gt;
+          {/if}
+        &lt;/div&gt;
+      {/each}
+      
+      &lt;button type="button" class="add-option-btn" on:click={addOption}&gt;
+        + Add Option
+      &lt;/button&gt;
+    &lt;/div&gt;
+    
+    {#if form?.error}
+      &lt;div class="error"&gt;
+        {form.error}
+      &lt;/div&gt;
+    {/if}
+    
+    &lt;button type="submit" class="submit-btn" disabled={loading}&gt;
+      {loading ? 'Creating Poll...' : 'Create Poll'}
+    &lt;/button&gt;
+  &lt;/form&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #4f46e5;
+  }
+  
+  .option-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .option-input input {
+    flex: 1;
+  }
+  
+  .remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.2s;
+  }
+  
+  .remove-btn:hover {
+    background: #dc2626;
+  }
+  
+  .add-option-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+    width: 100%;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  
+  .add-option-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+  }
+  
+  .submit-btn {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+  }
+  
+  .submit-btn:hover:not(:disabled) {
+    background: #4338ca;
+  }
+  
+  .submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+  
+  .error {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    margin-bottom: 1rem;
+  }
+&lt;/style&gt;</code></pre>
+
+<h2>Form Features</h2>
+<p>This form includes several user-friendly features:</p>
+
+<h3>✨ Dynamic Options</h3>
+<ul>
+    <li><strong>Add options:</strong> Users can add as many poll options as needed</li>
+    <li><strong>Remove options:</strong> Delete unwanted options (minimum 2 required)</li>
+    <li><strong>Real-time binding:</strong> Form state updates automatically</li>
+</ul>
+
+<h3>🔄 Progressive Enhancement</h3>
+<ul>
+    <li><strong>Works without JS:</strong> Form submission works even if JavaScript fails</li>
+    <li><strong>Enhanced with JS:</strong> Better UX with loading states and validation</li>
+    <li><strong>Error handling:</strong> Displays server errors nicely</li>
+</ul>
+
+<div class="success">
+    <strong>✅ Form Complete!</strong> Users can now create polls with a beautiful, accessible interface. Next, we'll
+    set up the poll viewing page.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 6 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>

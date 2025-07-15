@@ -1,0 +1,96 @@
+<div class="step-number">9</div>
+<h1>Step 9: Deployment</h1>
+<p>Ready to share your polling app with the world? Let's deploy it to production!</p>
+
+<h2>Deploy PartyKit Server</h2>
+<p>First, deploy your PartyKit server:</p>
+<pre><code>npx partykit deploy</code></pre>
+
+<p>This will:</p>
+<ul>
+    <li>Create a PartyKit account if you don't have one</li>
+    <li>Deploy your server to a global edge network</li>
+    <li>Give you a URL like <code>your-project.your-username.partykit.dev</code></li>
+</ul>
+
+<h2>Update Environment Variables</h2>
+<p>After deployment, update your <code>.env</code> file for production:</p>
+<pre><code># Development
+PARTYKIT_URL=http://127.0.0.1:1999
+PUBLIC_PARTYKIT_HOST=127.0.0.1:1999
+
+# Production
+PARTYKIT_URL=https://your-project.your-username.partykit.dev
+PUBLIC_PARTYKIT_HOST=your-project.your-username.partykit.dev</code></pre>
+
+<h2>Deploy SvelteKit App</h2>
+<p>You can deploy your SvelteKit app to various platforms:</p>
+
+<h3>🚀 Vercel (Recommended)</h3>
+<pre><code># Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel</code></pre>
+
+<h3>🌐 Netlify</h3>
+<pre><code># Install Netlify CLI
+npm i -g netlify-cli
+
+# Build and deploy
+npm run build
+netlify deploy --prod --dir build</code></pre>
+
+<h3>🐳 Railway</h3>
+<pre><code># Install Railway CLI
+npm i -g @railway/cli
+
+# Login and deploy
+railway login
+railway deploy</code></pre>
+
+<h2>Set Production Environment Variables</h2>
+<p>In your deployment platform, set these environment variables:</p>
+<pre><code>PUBLIC_PARTYKIT_HOST=your-project.your-username.partykit.dev
+PARTYKIT_URL=https://your-project.your-username.partykit.dev</code></pre>
+
+<h3>For Vercel:</h3>
+<ol>
+    <li>Go to your project dashboard</li>
+    <li>Click "Settings" → "Environment Variables"</li>
+    <li>Add the variables above</li>
+    <li>Redeploy your application</li>
+</ol>
+
+<h2>🎉 Congratulations!</h2>
+<div class="success">
+    <strong>You did it!</strong> You've successfully built and deployed a real-time multiplayer polling application
+    using SvelteKit and PartyKit.
+</div>
+
+<h2>Next Steps</h2>
+<p>Now that you have a solid foundation, consider adding:</p>
+<ul>
+    <li><strong>User Authentication:</strong> Add accounts with Auth0 or similar</li>
+    <li><strong>Poll Expiration:</strong> Set time limits on polls</li>
+    <li><strong>Advanced Analytics:</strong> Track participation rates and trends</li>
+    <li><strong>Custom Themes:</strong> Let users style their polls</li>
+    <li><strong>Comments System:</strong> Add real-time comments to polls</li>
+    <li><strong>Admin Dashboard:</strong> Manage polls and view statistics</li>
+</ul>
+
+<h2>Share Your Creation</h2>
+<p>We'd love to see what you've built! Share your polling app and let others experience real-time collaboration in
+    action.</p>
+
+<div class="success">
+    <strong>🌟 Thank you for following this tutorial!</strong> You've learned valuable skills in real-time web
+    development that you can apply to many other projects.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 10 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Complete ✓</button>
+</div>

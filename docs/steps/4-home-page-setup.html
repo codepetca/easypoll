@@ -1,0 +1,102 @@
+<div class="step-number">4</div>
+<h1>Step 4: Home Page Setup</h1>
+<p>Now we'll create the server actions that handle poll creation when users submit the form.</p>
+
+<h2>Create Server Actions</h2>
+<p>Create <code>src/routes/+page.server.ts</code> with the following content:</p>
+<pre><code>import { redirect, fail } from '@sveltejs/kit';
+import type { Actions } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+
+// Fallback to default development URL if not set
+const PARTYKIT_URL = env.PARTYKIT_URL || 'http://127.0.0.1:1999';
+
+export const actions: Actions = {
+  createPoll: async ({ request }) => {
+    const data = await request.formData();
+    const title = data.get('title')?.toString() ?? 'Anonymous poll';
+    
+    // Get options from form data
+    const options: string[] = [];
+    let i = 0;
+    while (data.has(`option-${i}`)) {
+      const option = data.get(`option-${i}`)?.toString();
+      if (option && option.trim()) {
+        options.push(option.trim());
+      }
+      i++;
+    }
+    
+    // Ensure we have at least 2 options
+    if (options.length < 2) {
+      return fail(400, {
+        error: 'Please provide at least 2 options'
+      });
+    }
+    
+    // Generate a random poll ID
+    const pollId = Math.random().toString(36).substr(2, 9);
+    
+    console.log(`Creating poll with ID: ${pollId}`);
+    console.log(`PartyKit URL: ${PARTYKIT_URL}`);
+    
+    // Create poll on PartyKit server
+    const response = await fetch(`${PARTYKIT_URL}/parties/main/${pollId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title,
+        options
+      })
+    });
+    
+    console.log(`Response status: ${response.status}`);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`PartyKit error: ${errorText}`);
+      return fail(500, {
+        error: 'Failed to create poll. Please try again.'
+      });
+    }
+    
+    // Redirect to the poll page
+    throw redirect(302, `/${pollId}`);
+  }
+};</code></pre>
+
+<h2>Understanding Server Actions</h2>
+<p>This server action handles the poll creation process:</p>
+
+<h3>📝 Form Processing</h3>
+<ul>
+    <li><strong>FormData extraction:</strong> Gets title and options from the form</li>
+    <li><strong>Validation:</strong> Ensures at least 2 options are provided</li>
+    <li><strong>ID generation:</strong> Creates a unique poll identifier</li>
+</ul>
+
+<h3>🌐 API Communication</h3>
+<ul>
+    <li><strong>HTTP POST:</strong> Sends poll data to PartyKit server</li>
+    <li><strong>Error handling:</strong> Returns user-friendly error messages</li>
+    <li><strong>Redirect:</strong> Navigates to the new poll page on success</li>
+</ul>
+
+<div class="warning">
+    <strong>🔧 Note:</strong> We use <code>fail()</code> for proper SvelteKit error handling and
+    <code>env.dynamic/private</code> for environment variables.
+</div>
+
+<div class="success">
+    <strong>✅ Server Actions Ready!</strong> The backend logic for poll creation is complete. Next, we'll create the
+    user-facing form component.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 5 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>

@@ -1,0 +1,181 @@
+<div class="step-number">3</div>
+<h1>Step 3: PartyKit Server</h1>
+<p>Now we'll create the PartyKit server that handles real-time communication, vote processing, and data persistence.</p>
+
+<h2>Create the Server Directory</h2>
+<p>First, create the <code>party</code> directory in your project root:</p>
+<pre><code>mkdir party</code></pre>
+
+<h2>Create the Server File</h2>
+<p>Create <code>party/index.ts</code> with the following content:</p>
+<pre><code>import type * as Party from "partykit/server";
+
+// Types (same as in our SvelteKit app)
+interface Poll {
+  id: string;
+  title: string;
+  options: string[];
+  votes: { [option: string]: number };
+}
+
+interface VoteMessage {
+  type: 'vote';
+  option: string;
+}
+
+interface PollUpdateMessage {
+  type: 'poll-update';
+  poll: Poll;
+}
+
+type Message = VoteMessage | PollUpdateMessage;
+
+export default class PollServer implements Party.Server {
+  constructor(readonly room: Party.Room) {}
+
+  // Store poll data in memory
+  poll: Poll | null = null;
+
+  // Load poll data from storage when the room starts
+  async onStart() {
+    const storedPoll = await this.room.storage.get&lt;Poll&gt;("poll");
+    if (storedPoll) {
+      this.poll = storedPoll;
+    }
+  }
+
+  // Handle new WebSocket connections
+  async onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
+    // Send current poll data to new connections
+    if (this.poll) {
+      conn.send(JSON.stringify({
+        type: 'poll-update',
+        poll: this.poll
+      } as PollUpdateMessage));
+    }
+  }
+
+  // Handle incoming WebSocket messages
+  async onMessage(message: string, sender: Party.Connection) {
+    try {
+      const data = JSON.parse(message) as Message;
+      
+      if (data.type === 'vote' && this.poll) {
+        // Process the vote
+        if (this.poll.options.includes(data.option)) {
+          this.poll.votes[data.option] = (this.poll.votes[data.option] || 0) + 1;
+          
+          // Save updated poll to storage
+          await this.savePoll();
+          
+          // Broadcast updated poll to all connected clients
+          this.room.broadcast(JSON.stringify({
+            type: 'poll-update',
+            poll: this.poll
+          } as PollUpdateMessage));
+        }
+      }
+    } catch (error) {
+      console.error('Error processing message:', error);
+    }
+  }
+
+  // Handle HTTP requests (for creating polls)
+  async onRequest(req: Party.Request): Promise&lt;Response&gt; {
+    if (req.method === "POST") {
+      try {
+        const data = await req.json() as any;
+        
+        // Validate incoming data
+        if (!data || typeof data !== 'object') {
+          return new Response("Invalid data format", { status: 400 });
+        }
+        
+        const title = data.title || "Anonymous poll";
+        const options = Array.isArray(data.options) ? data.options : [];
+        
+        // Validate options
+        if (options.length &lt; 2) {
+          return new Response("At least 2 options required", { status: 400 });
+        }
+        
+        // Create new poll
+        const poll: Poll = {
+          id: this.room.id,
+          title: title,
+          options: options,
+          votes: {}
+        };
+        
+        // Initialize votes for each option
+        options.forEach((option: string) =&gt; {
+          poll.votes[option] = 0;
+        });
+        
+        this.poll = poll;
+        await this.savePoll();
+        
+        return new Response(JSON.stringify(poll), {
+          headers: { "Content-Type": "application/json" }
+        });
+      } catch (error) {
+        return new Response("Bad Request", { status: 400 });
+      }
+    }
+    
+    if (req.method === "GET") {
+      // Return current poll data
+      if (this.poll) {
+        return new Response(JSON.stringify(this.poll), {
+          headers: { "Content-Type": "application/json" }
+        });
+      } else {
+        return new Response("Not found", { status: 404 });
+      }
+    }
+    
+    return new Response("Method not allowed", { status: 405 });
+  }
+
+  // Helper method to save poll to storage
+  private async savePoll() {
+    if (this.poll) {
+      await this.room.storage.put("poll", this.poll);
+    }
+  }
+}
+
+PollServer satisfies Party.Worker;</code></pre>
+
+<h2>Understanding the Server</h2>
+<p>The PartyKit server handles several key responsibilities:</p>
+
+<h3>🔌 Connection Management</h3>
+<ul>
+    <li><strong>onConnect:</strong> Sends current poll data to new connections</li>
+    <li><strong>onMessage:</strong> Processes votes and broadcasts updates</li>
+</ul>
+
+<h3>🌐 HTTP Endpoints</h3>
+<ul>
+    <li><strong>POST:</strong> Creates new polls with validation</li>
+    <li><strong>GET:</strong> Retrieves existing poll data</li>
+</ul>
+
+<h3>💾 Data Persistence</h3>
+<ul>
+    <li><strong>onStart:</strong> Loads saved poll data on server restart</li>
+    <li><strong>savePoll:</strong> Persists vote updates to storage</li>
+</ul>
+
+<div class="success">
+    <strong>✅ Server Ready!</strong> Your PartyKit server is now ready to handle real-time polling. Next, we'll
+    create the SvelteKit pages that will interact with this server.
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <button class="nav-btn secondary" onclick="previousStep()">← Previous</button>
+    <span class="step-indicator">Step 4 of 10</span>
+    <button class="nav-btn" onclick="nextStep()">Next →</button>
+</div>
