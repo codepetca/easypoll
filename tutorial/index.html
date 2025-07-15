@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SvelteKit + PartyKit Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            padding: 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        h1 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #1e293b;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #374151;
+            margin: 1.5rem 0 0.75rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #4b5563;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .intro h1 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .intro p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        code {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .nav-btn {
+            background: #6366f1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: #4f46e5;
+        }
+
+        .nav-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.secondary {
+            background: #e2e8f0;
+            color: #374151;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .step-number {
+            background: #6366f1;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        ul,
+        ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Step 0: Introduction -->
+            <div class="step-content active" id="step-0">
+                <div class="intro">
+                    <h1>SvelteKit + PartyKit Real-Time Polling App</h1>
+                    <p>Build a real-time multiplayer polling app with live updates, vote persistence, and seamless user
+                        experience. Perfect for learning real-time web development!</p>
+                </div>
+
+                <!-- Navigation -->
+                <div class="navigation">
+                    <button class="nav-btn secondary" id="prevBtn" onclick="previousStep()">← Previous</button>
+                    <span id="stepIndicator">Step 1 of 10</span>
+                    <button class="nav-btn" id="nextBtn" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 1: Project Setup -->
+            <div class="step-content" id="step-1">
+                <h1>Step 1: Project Setup</h1>
+                <p>Let's start by creating a new SvelteKit project and installing the necessary dependencies for our
+                    real-time
+                    polling app.</p>
+
+                <h2>Create SvelteKit Project</h2>
+                <p>First, we'll create a new SvelteKit project using the latest CLI:</p>
+                <pre><code>npx sv create easypoll
+cd easypoll
+npm install</code></pre>
+
+                <p>When prompted, choose these options:</p>
+                <ul>
+                    <li><strong>Template:</strong> Skeleton project</li>
+                    <li><strong>Add type checking with TypeScript:</strong> Yes</li>
+                    <li><strong>Add ESLint for code linting:</strong> Yes (recommended)</li>
+                    <li><strong>Add Prettier for code formatting:</strong> Yes (recommended)</li>
+                </ul>
+
+                <h2>Install Dependencies</h2>
+                <p>Now let's install PartyKit and the additional dependencies we'll need:</p>
+                <pre><code>npm install partykit partysocket
+npm install -D @types/node</code></pre>
+
+                <h2>Create Environment Variables</h2>
+                <p>Create a <code>.env</code> file in your project root with the following content:</p>
+                <pre><code># Development
+PARTYKIT_URL=http://127.0.0.1:1999
+PUBLIC_PARTYKIT_HOST=127.0.0.1:1999
+
+# Production (set when deploying)
+# PUBLIC_PARTYKIT_HOST=your-project.your-username.partykit.dev</code></pre>
+
+                <h2>Configure PartyKit</h2>
+                <p>Create a <code>partykit.json</code> file in your project root:</p>
+                <pre><code>{
+  "name": "easypoll",
+  "main": "party/index.ts",
+  "compatibilityDate": "2025-07-15"
+}</code></pre>
+
+                <div class="success">
+                    <strong>✅ Great job!</strong> Your project structure is now set up and ready for development. In the
+                    next step,
+                    we'll create the TypeScript types that will be shared between our client and server code.
+                </div>
+
+                <!-- Navigation -->
+                <div class="navigation">
+                    <button class="nav-btn secondary" id="prevBtn" onclick="previousStep()">← Previous</button>
+                    <span id="stepIndicator">Step 1 of 10</span>
+                    <button class="nav-btn" id="nextBtn" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: TypeScript Types -->
+            <div class="step-content" id="step-2">
+                <div class="step-number">2</div>
+                <h1>Step 2: TypeScript Types</h1>
+                <p>Let's create the TypeScript interfaces that will define the structure of our data throughout the
+                    application.</p>
+
+                <h2>Create the Types File</h2>
+                <p>First, create the <code>src/lib</code> directory if it doesn't exist:</p>
+                <pre><code>mkdir src/lib</code></pre>
+
+                <p>Now create <code>src/lib/types.ts</code> with the following content:</p>
+                <pre><code>export interface Poll {
+  id: string;
+  title: string;
+  options: string[];
+  votes: { [option: string]: number };
+}
+
+export interface VoteMessage {
+  type: 'vote';
+  option: string;
+}
+
+export interface PollUpdateMessage {
+  type: 'poll-update';
+  poll: Poll;
+}
+
+export type Message = VoteMessage | PollUpdateMessage;</code></pre>
+
+                <h2>Understanding the Types</h2>
+                <p>Let's break down what each interface does:</p>
+
+                <h3>Poll Interface</h3>
+                <ul>
+                    <li><strong>id:</strong> Unique identifier for each poll</li>
+                    <li><strong>title:</strong> The question being asked</li>
+                    <li><strong>options:</strong> Array of possible answers</li>
+                    <li><strong>votes:</strong> Object mapping each option to its vote count</li>
+                </ul>
+
+                <h3>Message Types</h3>
+                <ul>
+                    <li><strong>VoteMessage:</strong> Sent when a user votes for an option</li>
+                    <li><strong>PollUpdateMessage:</strong> Sent to update all clients with new vote counts</li>
+                    <li><strong>Message:</strong> Union type for type-safe message handling</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>💡 Pro Tip:</strong> Having shared types between client and server ensures consistency and
+                    catches
+                    errors at compile time rather than runtime.
+                </div>
+
+                <div class="success">
+                    <strong>✅ Types Created!</strong> Now we have a solid foundation for type-safe development. Next,
+                    we'll create
+                    the PartyKit server that will handle our real-time functionality.
+                </div>
+
+                <!-- Navigation -->
+                <div class="navigation">
+                    <button class="nav-btn secondary" id="prevBtn" onclick="previousStep()">← Previous</button>
+                    <span id="stepIndicator">Step 2 of 10</span>
+                    <button class="nav-btn" id="nextBtn" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Remaining steps would continue here with the same pattern... -->
+        </div>
+
+        <script>
+            let currentStep = 0;
+            const totalSteps = 9; // 0-9 (10 steps total)
+
+            function showStep(stepNumber) {
+                // Hide all steps
+                document.querySelectorAll('.step-content').forEach(step => {
+                    step.classList.remove('active');
+                });
+
+                // Show current step
+                document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+                // Update step indicator
+                document.getElementById('stepIndicator').textContent = `Step ${stepNumber + 1} of ${totalSteps + 1}`;
+
+                // Update navigation buttons
+                document.getElementById('prevBtn').disabled = stepNumber === 0;
+                document.getElementById('nextBtn').disabled = stepNumber === totalSteps;
+
+                if (stepNumber === totalSteps) {
+                    document.getElementById('nextBtn').textContent = 'Complete ✓';
+                } else {
+                    document.getElementById('nextBtn').textContent = 'Next →';
+                }
+
+                currentStep = stepNumber;
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            function nextStep() {
+                if (currentStep < totalSteps) {
+                    showStep(currentStep + 1);
+                }
+            }
+
+            function previousStep() {
+                if (currentStep > 0) {
+                    showStep(currentStep - 1);
+                }
+            }
+
+            // Handle step navigation clicks (removed - no sidebar)
+            // Removed sidebar navigation code
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    previousStep();
+                } else if (e.key === 'ArrowRight') {
+                    nextStep();
+                }
+            });
+
+            // Initialize
+            showStep(0);
+        </script>
+</body>
+
+</html>
