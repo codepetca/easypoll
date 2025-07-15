@@ -1,0 +1,5 @@
+{
+	"name": "easypoll",
+	"main": "party/index.ts",
+	"compatibilityDate": "2025-07-15"
+}
