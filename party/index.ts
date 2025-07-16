@@ -1,24 +1,14 @@
 import type * as Party from 'partykit/server';
-
-// Types (same as in our SvelteKit app)
-interface Poll {
-	id: string;
-	title: string;
-	options: string[];
-	votes: { [option: string]: number };
-}
-
-interface VoteMessage {
-	type: 'vote';
-	option: string;
-}
-
-interface PollUpdateMessage {
-	type: 'poll-update';
-	poll: Poll;
-}
-
-type Message = VoteMessage | PollUpdateMessage;
+import {
+	Poll,
+	VoteMessage,
+	PollUpdateMessage,
+	Message,
+	CreatePollRequest,
+	MessageSchema,
+	CreatePollRequestSchema,
+	PollSchema
+} from './types';
 
 export default class PollServer implements Party.Server {
 	constructor(readonly room: Party.Room) {}
@@ -50,12 +40,13 @@ export default class PollServer implements Party.Server {
 	// Handle incoming WebSocket messages
 	async onMessage(message: string, sender: Party.Connection) {
 		try {
-			const data = JSON.parse(message) as Message;
+			const data = JSON.parse(message);
+			const validatedMessage = MessageSchema.parse(data);
 
-			if (data.type === 'vote' && this.poll) {
+			if (validatedMessage.type === 'vote' && this.poll) {
 				// Process the vote
-				if (this.poll.options.includes(data.option)) {
-					this.poll.votes[data.option] = (this.poll.votes[data.option] || 0) + 1;
+				if (this.poll.options.includes(validatedMessage.option)) {
+					this.poll.votes[validatedMessage.option] = (this.poll.votes[validatedMessage.option] || 0) + 1;
 
 					// Save updated poll to storage
 					await this.savePoll();
@@ -80,15 +71,11 @@ export default class PollServer implements Party.Server {
 
 		if (req.method === 'POST') {
 			try {
-				const data = (await req.json()) as any;
+				const data = await req.json();
+				const validatedData = CreatePollRequestSchema.parse(data);
 
-				// Validate incoming data
-				if (!data || typeof data !== 'object') {
-					return new Response('Invalid data format', { status: 400 });
-				}
-
-				const title = data.title || 'Anonymous poll';
-				const options = Array.isArray(data.options) ? data.options : [];
+				const title = validatedData.title || 'Anonymous poll';
+				const options = validatedData.options || [];
 
 				// Validate options
 				if (options.length < 2) {
@@ -108,13 +95,16 @@ export default class PollServer implements Party.Server {
 					poll.votes[option] = 0;
 				});
 
-				this.poll = poll;
+				// Validate the created poll
+				const validatedPoll = PollSchema.parse(poll);
+				this.poll = validatedPoll;
 				await this.savePoll();
 
-				return new Response(JSON.stringify(poll), {
+				return new Response(JSON.stringify(validatedPoll), {
 					headers: { 'Content-Type': 'application/json' }
 				});
 			} catch (error) {
+				console.error('Error creating poll:', error);
 				return new Response('Bad Request', { status: 400 });
 			}
 		}
